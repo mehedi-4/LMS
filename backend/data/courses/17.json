@@ -1,0 +1,49 @@
+{
+  "courseId": 17,
+  "instructorId": 2,
+  "title": "Data Structure",
+  "description": "Learn Data Structure",
+  "price": 10,
+  "numberOfLectures": 2,
+  "lectures": [
+    {
+      "lectureNumber": 1,
+      "title": "Lecture 1",
+      "video": {
+        "originalName": "snapsave-app_778986108505475_hd.mp4",
+        "mimeType": "video/mp4",
+        "storagePath": "/uploads/videos/1764066765384-194735087.mp4",
+        "filename": "1764066765384-194735087.mp4",
+        "size": 5038148
+      },
+      "materials": [
+        {
+          "originalName": "wallhaven-d6j79o.png",
+          "mimeType": "image/png",
+          "storagePath": "/uploads/materials/1764066765394-585411010.png",
+          "filename": "1764066765394-585411010.png"
+        }
+      ]
+    },
+    {
+      "lectureNumber": 2,
+      "title": "Lecture 2",
+      "video": {
+        "originalName": "snapsave-app_1225900576015944_hd.mp4",
+        "mimeType": "video/mp4",
+        "storagePath": "/uploads/videos/1764066765397-757909584.mp4",
+        "filename": "1764066765397-757909584.mp4",
+        "size": 2078260
+      },
+      "materials": [
+        {
+          "originalName": "Generated Image November 15, 2025 - 5_30AM.png",
+          "mimeType": "image/png",
+          "storagePath": "/uploads/materials/1764066765401-759763549.png",
+          "filename": "1764066765401-759763549.png"
+        }
+      ]
+    }
+  ],
+  "createdAt": "2025-11-25T10:32:45.418Z"
+}

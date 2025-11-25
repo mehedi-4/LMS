@@ -1,0 +1,68 @@
+{
+  "courseId": 15,
+  "instructorId": 1,
+  "title": "fads ",
+  "description": "4",
+  "price": 23,
+  "numberOfLectures": 3,
+  "lectures": [
+    {
+      "lectureNumber": 1,
+      "title": "dfa",
+      "video": {
+        "originalName": "snapsave-app_778986108505475_hd.mp4",
+        "mimeType": "video/mp4",
+        "storagePath": "/uploads/videos/1764065766342-885178711.mp4",
+        "filename": "1764065766342-885178711.mp4",
+        "size": 5038148
+      },
+      "materials": [
+        {
+          "originalName": "macos-sequoia-6400x3552-17665.jpg",
+          "mimeType": "image/jpeg",
+          "storagePath": "/uploads/materials/1764065766354-84866985.jpg",
+          "filename": "1764065766354-84866985.jpg"
+        }
+      ]
+    },
+    {
+      "lectureNumber": 2,
+      "title": "adfa dfa",
+      "video": {
+        "originalName": "snapsave-app_1225900576015944_hd.mp4",
+        "mimeType": "video/mp4",
+        "storagePath": "/uploads/videos/1764065766367-154267647.mp4",
+        "filename": "1764065766367-154267647.mp4",
+        "size": 2078260
+      },
+      "materials": [
+        {
+          "originalName": "macos-sequoia-6400x3552-17674.jpg",
+          "mimeType": "image/jpeg",
+          "storagePath": "/uploads/materials/1764065766371-976674889.jpg",
+          "filename": "1764065766371-976674889.jpg"
+        }
+      ]
+    },
+    {
+      "lectureNumber": 3,
+      "title": "afa adsf",
+      "video": {
+        "originalName": "snapsave-app_1225900576015944_hd.mp4",
+        "mimeType": "video/mp4",
+        "storagePath": "/uploads/videos/1764065766383-724739837.mp4",
+        "filename": "1764065766383-724739837.mp4",
+        "size": 2078260
+      },
+      "materials": [
+        {
+          "originalName": "macos-sequoia-6400x3552-17666.jpg",
+          "mimeType": "image/jpeg",
+          "storagePath": "/uploads/materials/1764065766388-647287476.jpg",
+          "filename": "1764065766388-647287476.jpg"
+        }
+      ]
+    }
+  ],
+  "createdAt": "2025-11-25T10:16:06.415Z"
+}

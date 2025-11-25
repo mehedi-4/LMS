@@ -1,0 +1,30 @@
+{
+  "courseId": 14,
+  "instructorId": 1,
+  "title": "ue ew",
+  "description": "fgslkjk ksdl ",
+  "price": 10,
+  "numberOfLectures": 1,
+  "lectures": [
+    {
+      "lectureNumber": 1,
+      "title": "adfagh g",
+      "video": {
+        "originalName": "snapsave-app_778986108505475_hd.mp4",
+        "mimeType": "video/mp4",
+        "storagePath": "/uploads/videos/1764065535120-995641232.mp4",
+        "filename": "1764065535120-995641232.mp4",
+        "size": 5038148
+      },
+      "materials": [
+        {
+          "originalName": "macos-sequoia-6400x3552-17669.jpg",
+          "mimeType": "image/jpeg",
+          "storagePath": "/uploads/materials/1764065535136-166478285.jpg",
+          "filename": "1764065535136-166478285.jpg"
+        }
+      ]
+    }
+  ],
+  "createdAt": "2025-11-25T10:12:15.158Z"
+}

@@ -1,0 +1,61 @@
+{
+  "courseId": 19,
+  "instructorId": 3,
+  "title": "Computer Acrhitechture",
+  "description": "seg",
+  "price": 10,
+  "numberOfLectures": 2,
+  "lectures": [
+    {
+      "lectureNumber": 1,
+      "title": "foreplay",
+      "video": {
+        "originalName": "snapsave-app_778986108505475_hd.mp4",
+        "mimeType": "video/mp4",
+        "storagePath": "/uploads/videos/1764068505156-617651120.mp4",
+        "filename": "1764068505156-617651120.mp4",
+        "size": 5038148
+      },
+      "materials": [
+        {
+          "originalName": "macos-tahoe-26-5k-6016x6016-22672.jpg",
+          "mimeType": "image/jpeg",
+          "storagePath": "/uploads/materials/1764068505166-811005303.jpg",
+          "filename": "1764068505166-811005303.jpg"
+        },
+        {
+          "originalName": "Chapter1.pdf",
+          "mimeType": "application/pdf",
+          "storagePath": "/uploads/materials/1764068505180-4232921.pdf",
+          "filename": "1764068505180-4232921.pdf"
+        },
+        {
+          "originalName": "LMS.zip",
+          "mimeType": "application/zip",
+          "storagePath": "/uploads/materials/1764068505181-33495280.zip",
+          "filename": "1764068505181-33495280.zip"
+        }
+      ]
+    },
+    {
+      "lectureNumber": 2,
+      "title": "actual segs",
+      "video": {
+        "originalName": "snapsave-app_1225900576015944_hd.mp4",
+        "mimeType": "video/mp4",
+        "storagePath": "/uploads/videos/1764068505279-151376627.mp4",
+        "filename": "1764068505279-151376627.mp4",
+        "size": 2078260
+      },
+      "materials": [
+        {
+          "originalName": "wallhaven-d6j79o.png",
+          "mimeType": "image/png",
+          "storagePath": "/uploads/materials/1764068505282-587432232.png",
+          "filename": "1764068505282-587432232.png"
+        }
+      ]
+    }
+  ],
+  "createdAt": "2025-11-25T11:01:45.299Z"
+}

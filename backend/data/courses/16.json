@@ -1,0 +1,49 @@
+{
+  "courseId": 16,
+  "instructorId": 1,
+  "title": "Linear Algebra",
+  "description": "sdaf ldkjf",
+  "price": 10,
+  "numberOfLectures": 2,
+  "lectures": [
+    {
+      "lectureNumber": 1,
+      "title": "lec 1",
+      "video": {
+        "originalName": "snapsave-app_778986108505475_hd.mp4",
+        "mimeType": "video/mp4",
+        "storagePath": "/uploads/videos/1764065891301-277412457.mp4",
+        "filename": "1764065891301-277412457.mp4",
+        "size": 5038148
+      },
+      "materials": [
+        {
+          "originalName": "Generated Image November 15, 2025 - 5_30AM.png",
+          "mimeType": "image/png",
+          "storagePath": "/uploads/materials/1764065891312-943130383.png",
+          "filename": "1764065891312-943130383.png"
+        }
+      ]
+    },
+    {
+      "lectureNumber": 2,
+      "title": "adfa",
+      "video": {
+        "originalName": "snapsave-app_1225900576015944_hd.mp4",
+        "mimeType": "video/mp4",
+        "storagePath": "/uploads/videos/1764065891315-626790176.mp4",
+        "filename": "1764065891315-626790176.mp4",
+        "size": 2078260
+      },
+      "materials": [
+        {
+          "originalName": "macos-sequoia-6400x3552-17666.jpg",
+          "mimeType": "image/jpeg",
+          "storagePath": "/uploads/materials/1764065891320-871412224.jpg",
+          "filename": "1764065891320-871412224.jpg"
+        }
+      ]
+    }
+  ],
+  "createdAt": "2025-11-25T10:18:11.348Z"
+}

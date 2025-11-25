@@ -1,0 +1,68 @@
+{
+  "courseId": 18,
+  "instructorId": 3,
+  "title": "DBMS",
+  "description": "Database",
+  "price": 15,
+  "numberOfLectures": 3,
+  "lectures": [
+    {
+      "lectureNumber": 1,
+      "title": "Lecture 1",
+      "video": {
+        "originalName": "The 1975 - About You (Official).mp4",
+        "mimeType": "video/mp4",
+        "storagePath": "/uploads/videos/1764067338412-387253569.mp4",
+        "filename": "1764067338412-387253569.mp4",
+        "size": 6618614
+      },
+      "materials": [
+        {
+          "originalName": "API-Project_251121_080310.pdf",
+          "mimeType": "application/pdf",
+          "storagePath": "/uploads/materials/1764067338427-370886803.pdf",
+          "filename": "1764067338427-370886803.pdf"
+        }
+      ]
+    },
+    {
+      "lectureNumber": 2,
+      "title": "Lecture 2",
+      "video": {
+        "originalName": "snapsave-app_778986108505475_hd.mp4",
+        "mimeType": "video/mp4",
+        "storagePath": "/uploads/videos/1764067338427-221712234.mp4",
+        "filename": "1764067338427-221712234.mp4",
+        "size": 5038148
+      },
+      "materials": [
+        {
+          "originalName": "Chapter1.pdf",
+          "mimeType": "application/pdf",
+          "storagePath": "/uploads/materials/1764067338435-928858941.pdf",
+          "filename": "1764067338435-928858941.pdf"
+        }
+      ]
+    },
+    {
+      "lectureNumber": 3,
+      "title": "Lecture 3",
+      "video": {
+        "originalName": "snapsave-app_1225900576015944_hd.mp4",
+        "mimeType": "video/mp4",
+        "storagePath": "/uploads/videos/1764067338437-260486077.mp4",
+        "filename": "1764067338437-260486077.mp4",
+        "size": 2078260
+      },
+      "materials": [
+        {
+          "originalName": "pple-carplay-ios-26-4000x2182-23294.jpg",
+          "mimeType": "image/jpeg",
+          "storagePath": "/uploads/materials/1764067338443-763245752.jpg",
+          "filename": "1764067338443-763245752.jpg"
+        }
+      ]
+    }
+  ],
+  "createdAt": "2025-11-25T10:42:18.460Z"
+}

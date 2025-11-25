@@ -1,0 +1,327 @@
+[
+  {
+    "courseId": 14,
+    "instructorId": 1,
+    "title": "ue ew",
+    "description": "fgslkjk ksdl ",
+    "price": 10,
+    "numberOfLectures": 1,
+    "lectures": [
+      {
+        "lectureNumber": 1,
+        "title": "adfagh g",
+        "video": {
+          "originalName": "snapsave-app_778986108505475_hd.mp4",
+          "mimeType": "video/mp4",
+          "storagePath": "/uploads/videos/1764065535120-995641232.mp4",
+          "filename": "1764065535120-995641232.mp4",
+          "size": 5038148
+        },
+        "materials": [
+          {
+            "originalName": "macos-sequoia-6400x3552-17669.jpg",
+            "mimeType": "image/jpeg",
+            "storagePath": "/uploads/materials/1764065535136-166478285.jpg",
+            "filename": "1764065535136-166478285.jpg"
+          }
+        ]
+      }
+    ],
+    "createdAt": "2025-11-25T10:12:15.158Z"
+  },
+  {
+    "courseId": 15,
+    "instructorId": 1,
+    "title": "fads ",
+    "description": "4",
+    "price": 23,
+    "numberOfLectures": 3,
+    "lectures": [
+      {
+        "lectureNumber": 1,
+        "title": "dfa",
+        "video": {
+          "originalName": "snapsave-app_778986108505475_hd.mp4",
+          "mimeType": "video/mp4",
+          "storagePath": "/uploads/videos/1764065766342-885178711.mp4",
+          "filename": "1764065766342-885178711.mp4",
+          "size": 5038148
+        },
+        "materials": [
+          {
+            "originalName": "macos-sequoia-6400x3552-17665.jpg",
+            "mimeType": "image/jpeg",
+            "storagePath": "/uploads/materials/1764065766354-84866985.jpg",
+            "filename": "1764065766354-84866985.jpg"
+          }
+        ]
+      },
+      {
+        "lectureNumber": 2,
+        "title": "adfa dfa",
+        "video": {
+          "originalName": "snapsave-app_1225900576015944_hd.mp4",
+          "mimeType": "video/mp4",
+          "storagePath": "/uploads/videos/1764065766367-154267647.mp4",
+          "filename": "1764065766367-154267647.mp4",
+          "size": 2078260
+        },
+        "materials": [
+          {
+            "originalName": "macos-sequoia-6400x3552-17674.jpg",
+            "mimeType": "image/jpeg",
+            "storagePath": "/uploads/materials/1764065766371-976674889.jpg",
+            "filename": "1764065766371-976674889.jpg"
+          }
+        ]
+      },
+      {
+        "lectureNumber": 3,
+        "title": "afa adsf",
+        "video": {
+          "originalName": "snapsave-app_1225900576015944_hd.mp4",
+          "mimeType": "video/mp4",
+          "storagePath": "/uploads/videos/1764065766383-724739837.mp4",
+          "filename": "1764065766383-724739837.mp4",
+          "size": 2078260
+        },
+        "materials": [
+          {
+            "originalName": "macos-sequoia-6400x3552-17666.jpg",
+            "mimeType": "image/jpeg",
+            "storagePath": "/uploads/materials/1764065766388-647287476.jpg",
+            "filename": "1764065766388-647287476.jpg"
+          }
+        ]
+      }
+    ],
+    "createdAt": "2025-11-25T10:16:06.415Z"
+  },
+  {
+    "courseId": 16,
+    "instructorId": 1,
+    "title": "Linear Algebra",
+    "description": "sdaf ldkjf",
+    "price": 10,
+    "numberOfLectures": 2,
+    "lectures": [
+      {
+        "lectureNumber": 1,
+        "title": "lec 1",
+        "video": {
+          "originalName": "snapsave-app_778986108505475_hd.mp4",
+          "mimeType": "video/mp4",
+          "storagePath": "/uploads/videos/1764065891301-277412457.mp4",
+          "filename": "1764065891301-277412457.mp4",
+          "size": 5038148
+        },
+        "materials": [
+          {
+            "originalName": "Generated Image November 15, 2025 - 5_30AM.png",
+            "mimeType": "image/png",
+            "storagePath": "/uploads/materials/1764065891312-943130383.png",
+            "filename": "1764065891312-943130383.png"
+          }
+        ]
+      },
+      {
+        "lectureNumber": 2,
+        "title": "adfa",
+        "video": {
+          "originalName": "snapsave-app_1225900576015944_hd.mp4",
+          "mimeType": "video/mp4",
+          "storagePath": "/uploads/videos/1764065891315-626790176.mp4",
+          "filename": "1764065891315-626790176.mp4",
+          "size": 2078260
+        },
+        "materials": [
+          {
+            "originalName": "macos-sequoia-6400x3552-17666.jpg",
+            "mimeType": "image/jpeg",
+            "storagePath": "/uploads/materials/1764065891320-871412224.jpg",
+            "filename": "1764065891320-871412224.jpg"
+          }
+        ]
+      }
+    ],
+    "createdAt": "2025-11-25T10:18:11.348Z"
+  },
+  {
+    "courseId": 17,
+    "instructorId": 2,
+    "title": "Data Structure",
+    "description": "Learn Data Structure",
+    "price": 10,
+    "numberOfLectures": 2,
+    "lectures": [
+      {
+        "lectureNumber": 1,
+        "title": "Lecture 1",
+        "video": {
+          "originalName": "snapsave-app_778986108505475_hd.mp4",
+          "mimeType": "video/mp4",
+          "storagePath": "/uploads/videos/1764066765384-194735087.mp4",
+          "filename": "1764066765384-194735087.mp4",
+          "size": 5038148
+        },
+        "materials": [
+          {
+            "originalName": "wallhaven-d6j79o.png",
+            "mimeType": "image/png",
+            "storagePath": "/uploads/materials/1764066765394-585411010.png",
+            "filename": "1764066765394-585411010.png"
+          }
+        ]
+      },
+      {
+        "lectureNumber": 2,
+        "title": "Lecture 2",
+        "video": {
+          "originalName": "snapsave-app_1225900576015944_hd.mp4",
+          "mimeType": "video/mp4",
+          "storagePath": "/uploads/videos/1764066765397-757909584.mp4",
+          "filename": "1764066765397-757909584.mp4",
+          "size": 2078260
+        },
+        "materials": [
+          {
+            "originalName": "Generated Image November 15, 2025 - 5_30AM.png",
+            "mimeType": "image/png",
+            "storagePath": "/uploads/materials/1764066765401-759763549.png",
+            "filename": "1764066765401-759763549.png"
+          }
+        ]
+      }
+    ],
+    "createdAt": "2025-11-25T10:32:45.418Z"
+  },
+  {
+    "courseId": 18,
+    "instructorId": 3,
+    "title": "DBMS",
+    "description": "Database",
+    "price": 15,
+    "numberOfLectures": 3,
+    "lectures": [
+      {
+        "lectureNumber": 1,
+        "title": "Lecture 1",
+        "video": {
+          "originalName": "The 1975 - About You (Official).mp4",
+          "mimeType": "video/mp4",
+          "storagePath": "/uploads/videos/1764067338412-387253569.mp4",
+          "filename": "1764067338412-387253569.mp4",
+          "size": 6618614
+        },
+        "materials": [
+          {
+            "originalName": "API-Project_251121_080310.pdf",
+            "mimeType": "application/pdf",
+            "storagePath": "/uploads/materials/1764067338427-370886803.pdf",
+            "filename": "1764067338427-370886803.pdf"
+          }
+        ]
+      },
+      {
+        "lectureNumber": 2,
+        "title": "Lecture 2",
+        "video": {
+          "originalName": "snapsave-app_778986108505475_hd.mp4",
+          "mimeType": "video/mp4",
+          "storagePath": "/uploads/videos/1764067338427-221712234.mp4",
+          "filename": "1764067338427-221712234.mp4",
+          "size": 5038148
+        },
+        "materials": [
+          {
+            "originalName": "Chapter1.pdf",
+            "mimeType": "application/pdf",
+            "storagePath": "/uploads/materials/1764067338435-928858941.pdf",
+            "filename": "1764067338435-928858941.pdf"
+          }
+        ]
+      },
+      {
+        "lectureNumber": 3,
+        "title": "Lecture 3",
+        "video": {
+          "originalName": "snapsave-app_1225900576015944_hd.mp4",
+          "mimeType": "video/mp4",
+          "storagePath": "/uploads/videos/1764067338437-260486077.mp4",
+          "filename": "1764067338437-260486077.mp4",
+          "size": 2078260
+        },
+        "materials": [
+          {
+            "originalName": "pple-carplay-ios-26-4000x2182-23294.jpg",
+            "mimeType": "image/jpeg",
+            "storagePath": "/uploads/materials/1764067338443-763245752.jpg",
+            "filename": "1764067338443-763245752.jpg"
+          }
+        ]
+      }
+    ],
+    "createdAt": "2025-11-25T10:42:18.460Z"
+  },
+  {
+    "courseId": 19,
+    "instructorId": 3,
+    "title": "Computer Acrhitechture",
+    "description": "seg",
+    "price": 10,
+    "numberOfLectures": 2,
+    "lectures": [
+      {
+        "lectureNumber": 1,
+        "title": "foreplay",
+        "video": {
+          "originalName": "snapsave-app_778986108505475_hd.mp4",
+          "mimeType": "video/mp4",
+          "storagePath": "/uploads/videos/1764068505156-617651120.mp4",
+          "filename": "1764068505156-617651120.mp4",
+          "size": 5038148
+        },
+        "materials": [
+          {
+            "originalName": "macos-tahoe-26-5k-6016x6016-22672.jpg",
+            "mimeType": "image/jpeg",
+            "storagePath": "/uploads/materials/1764068505166-811005303.jpg",
+            "filename": "1764068505166-811005303.jpg"
+          },
+          {
+            "originalName": "Chapter1.pdf",
+            "mimeType": "application/pdf",
+            "storagePath": "/uploads/materials/1764068505180-4232921.pdf",
+            "filename": "1764068505180-4232921.pdf"
+          },
+          {
+            "originalName": "LMS.zip",
+            "mimeType": "application/zip",
+            "storagePath": "/uploads/materials/1764068505181-33495280.zip",
+            "filename": "1764068505181-33495280.zip"
+          }
+        ]
+      },
+      {
+        "lectureNumber": 2,
+        "title": "actual segs",
+        "video": {
+          "originalName": "snapsave-app_1225900576015944_hd.mp4",
+          "mimeType": "video/mp4",
+          "storagePath": "/uploads/videos/1764068505279-151376627.mp4",
+          "filename": "1764068505279-151376627.mp4",
+          "size": 2078260
+        },
+        "materials": [
+          {
+            "originalName": "wallhaven-d6j79o.png",
+            "mimeType": "image/png",
+            "storagePath": "/uploads/materials/1764068505282-587432232.png",
+            "filename": "1764068505282-587432232.png"
+          }
+        ]
+      }
+    ],
+    "createdAt": "2025-11-25T11:01:45.299Z"
+  }
+]
