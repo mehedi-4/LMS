@@ -1,12 +1,30 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const AuthContext = createContext();
+const STORAGE_KEY = 'instructorAuth';
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : null;
+  });
+  const [isAuthenticated, setIsAuthenticated] = useState(() => Boolean(localStorage.getItem(STORAGE_KEY)));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setUser(parsed);
+        setIsAuthenticated(true);
+      } catch (err) {
+        console.error('Failed to parse stored instructor auth', err);
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+  }, []);
 
   const login = async (username, password) => {
     setLoading(true);
@@ -25,7 +43,7 @@ export function AuthProvider({ children }) {
       if (data.success) {
         setUser(data.instructor);
         setIsAuthenticated(true);
-        localStorage.setItem('user', JSON.stringify(data.instructor));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data.instructor));
         return { success: true };
       } else {
         setError(data.message);
@@ -43,7 +61,7 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
-    localStorage.removeItem('user');
+    localStorage.removeItem(STORAGE_KEY);
   };
 
   return (
