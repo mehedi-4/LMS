@@ -46,6 +46,113 @@ app.post("/bank-api/balance", async (req, res) => {
   }
 });
 
+// ===============================
+//   POST /bank-api/transfer
+//   Transfer money from student to LMS
+// ===============================
+app.post("/bank-api/transfer", async (req, res) => {
+  const connection = await bankDb.getConnection();
+  
+  try {
+    await connection.beginTransaction();
+
+    const { from_account_no, secret_key, amount } = req.body;
+
+    if (!from_account_no || !secret_key || !amount) {
+      await connection.rollback();
+      return res.status(400).json({ 
+        success: false,
+        error: "from_account_no, secret_key, and amount are required" 
+      });
+    }
+
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      await connection.rollback();
+      return res.status(400).json({ 
+        success: false,
+        error: "Amount must be a positive number" 
+      });
+    }
+
+    const LMS_ACCOUNT = "9999999999999999";
+
+    // Verify student account and secret key
+    const [studentRows] = await connection.execute(
+      "SELECT balance FROM users WHERE account_no = ? AND secret_key = ?",
+      [from_account_no, secret_key]
+    );
+
+    if (studentRows.length === 0) {
+      await connection.rollback();
+      return res.status(401).json({ 
+        success: false,
+        error: "Invalid account number or secret key" 
+      });
+    }
+
+    const studentBalance = parseFloat(studentRows[0].balance);
+
+    // Check if student has sufficient balance
+    if (studentBalance < parsedAmount) {
+      await connection.rollback();
+      return res.status(400).json({ 
+        success: false,
+        error: "Insufficient balance" 
+      });
+    }
+
+    // Verify LMS account exists
+    const [lmsRows] = await connection.execute(
+      "SELECT balance FROM users WHERE account_no = ?",
+      [LMS_ACCOUNT]
+    );
+
+    if (lmsRows.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ 
+        success: false,
+        error: "LMS account not found" 
+      });
+    }
+
+    const lmsBalance = parseFloat(lmsRows[0].balance);
+
+    // Deduct from student account
+    await connection.execute(
+      "UPDATE users SET balance = balance - ? WHERE account_no = ?",
+      [parsedAmount, from_account_no]
+    );
+
+    // Add to LMS account
+    await connection.execute(
+      "UPDATE users SET balance = balance + ? WHERE account_no = ?",
+      [parsedAmount, LMS_ACCOUNT]
+    );
+
+    await connection.commit();
+
+    return res.json({
+      success: true,
+      message: "Payment processed successfully",
+      from_account_no,
+      to_account_no: LMS_ACCOUNT,
+      amount: parsedAmount,
+      new_balance: studentBalance - parsedAmount,
+    });
+
+  } catch (error) {
+    await connection.rollback();
+    console.error("Transfer error:", error);
+    return res.status(500).json({ 
+      success: false,
+      error: "Server error during transfer" 
+    });
+  } finally {
+    connection.release();
+  }
+});
+
 // Start server
 app.listen(3000, () => {
   console.log("Bank API running on port 3000");

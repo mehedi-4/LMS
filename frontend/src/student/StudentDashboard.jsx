@@ -8,6 +8,8 @@ export default function StudentDashboard() {
   const [paymentForm, setPaymentForm] = useState({ bankAccNo: '', bankSecretKey: '' })
   const [paymentStatus, setPaymentStatus] = useState({ type: '', message: '' })
   const [paymentLoading, setPaymentLoading] = useState(false)
+  const [showEnrollModal, setShowEnrollModal] = useState(false)
+  const [selectedCourse, setSelectedCourse] = useState(null)
 
   useEffect(() => {
     if (student && !student.paymentSetup) {
@@ -85,8 +87,19 @@ export default function StudentDashboard() {
             onSetupClick={openPaymentModal}
           />
         )
+      case 'enrolled':
+        return <EnrolledCoursesSection student={student} />
       default:
-        return <OverviewSection student={student} onSetupClick={openPaymentModal} />
+        return (
+          <OverviewSection
+            student={student}
+            onSetupClick={openPaymentModal}
+            onEnrollClick={(course) => {
+              setSelectedCourse(course)
+              setShowEnrollModal(true)
+            }}
+          />
+        )
     }
   }
 
@@ -103,6 +116,12 @@ export default function StudentDashboard() {
             iconPath="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
             isActive={activeMenu === 'overview'}
             onClick={() => setActiveMenu('overview')}
+          />
+          <SidebarButton
+            label="Enrolled Courses"
+            iconPath="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            isActive={activeMenu === 'enrolled'}
+            onClick={() => setActiveMenu('enrolled')}
           />
           <SidebarButton
             label="Payment Setup"
@@ -135,6 +154,22 @@ export default function StudentDashboard() {
           loading={paymentLoading}
         />
       )}
+
+      {showEnrollModal && selectedCourse && (
+        <EnrollConfirmationModal
+          course={selectedCourse}
+          student={student}
+          onClose={() => {
+            setShowEnrollModal(false)
+            setSelectedCourse(null)
+          }}
+          onConfirm={async () => {
+            setShowEnrollModal(false)
+            // The enrollment will be handled by OverviewSection
+            setSelectedCourse(null)
+          }}
+        />
+      )}
     </div>
   )
 }
@@ -157,25 +192,130 @@ function SidebarButton({ label, iconPath, isActive, onClick }) {
   )
 }
 
-function OverviewSection({ student, onSetupClick }) {
+function OverviewSection({ student, onSetupClick, onEnrollClick }) {
+  const [courses, setCourses] = useState([])
+  const [enrolledCourseIds, setEnrolledCourseIds] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    fetchCourses()
+    if (student?.id) {
+      fetchEnrollments()
+    }
+  }, [student?.id])
+
+  const fetchCourses = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const response = await fetch('http://localhost:5000/api/courses')
+      const data = await response.json()
+
+      if (data.success) {
+        setCourses(data.courses)
+      } else {
+        setError(data.message || 'Failed to fetch courses')
+      }
+    } catch (err) {
+      setError('Error fetching courses: ' + err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchEnrollments = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/student/${student.id}/enrollments`)
+      const data = await response.json()
+
+      if (data.success) {
+        const enrolledIds = data.enrollments.map((e) => e.course_id)
+        setEnrolledCourseIds(enrolledIds)
+      }
+    } catch (err) {
+      console.error('Error fetching enrollments:', err)
+    }
+  }
+
+  const handleEnrollClick = (course) => {
+    if (!student?.id) {
+      setError('Please login to enroll in courses')
+      return
+    }
+    if (!student?.paymentSetup) {
+      setError('Please set up your payment information first')
+      onSetupClick()
+      return
+    }
+    onEnrollClick(course)
+  }
+
+  // Filter out enrolled courses
+  const availableCourses = courses.filter((course) => !enrolledCourseIds.includes(course.id))
+
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow p-6">
         <h1 className="text-3xl font-bold text-gray-900">Welcome, {student?.username}</h1>
+        <p className="text-gray-600 mt-2">Browse and enroll in courses below</p>
       </div>
-      {/* <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow p-6 border border-emerald-100">
-          <p className="text-sm uppercase text-gray-500 tracking-wide">Account snapshot</p>
-          <ul className="mt-4 space-y-2 text-gray-700">
-            <li>
-              <span className="font-semibold">Account number:</span> {student?.bankAccNo || 'Not provided'}
-            </li>
-            <li>
-              <span className="font-semibold">Secret key:</span> {student?.bankSecretKey || 'Not provided'}
-            </li>
-          </ul>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+          {error}
         </div>
-      </div> */}
+      )}
+
+      {loading ? (
+        <div className="bg-white rounded-lg shadow p-8 text-center">
+          <div className="inline-block">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          </div>
+          <p className="text-gray-600 mt-4">Loading courses...</p>
+        </div>
+      ) : availableCourses.length === 0 ? (
+        <div className="bg-white rounded-lg shadow p-8 text-center">
+          <p className="text-gray-600">No new courses available. Check your enrolled courses tab.</p>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {availableCourses.map((course) => (
+            <CourseCard
+              key={course.id}
+              course={course}
+              onEnroll={() => handleEnrollClick(course)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function CourseCard({ course, onEnroll }) {
+  return (
+    <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+      <div className="p-6">
+        <h3 className="text-xl font-bold text-gray-900 mb-2">{course.title}</h3>
+        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+          {course.description || 'No description available'}
+        </p>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <p className="text-2xl font-bold text-emerald-600">${parseFloat(course.price || 0).toFixed(2)}</p>
+            {course.instructor_username && (
+              <p className="text-xs text-gray-500 mt-1">By {course.instructor_username}</p>
+            )}
+          </div>
+        </div>
+        <button
+          onClick={onEnroll}
+          className="w-full py-2 px-4 rounded-lg font-semibold transition bg-emerald-600 text-white hover:bg-emerald-700"
+        >
+          Enroll Now
+        </button>
+      </div>
     </div>
   )
 }
@@ -213,6 +353,219 @@ function PaymentSection({ student, onSetupClick }) {
         >
           {hasPayment ? 'Update payment details' : 'Setup payment now'}
         </button>
+      </div>
+    </div>
+  )
+}
+
+function EnrolledCoursesSection({ student }) {
+  const [enrollments, setEnrollments] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (student?.id) {
+      fetchEnrollments()
+    }
+  }, [student?.id])
+
+  const fetchEnrollments = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const response = await fetch(`http://localhost:5000/api/student/${student.id}/enrollments`)
+      const data = await response.json()
+
+      if (data.success) {
+        setEnrollments(data.enrollments)
+      } else {
+        setError(data.message || 'Failed to fetch enrollments')
+      }
+    } catch (err) {
+      setError('Error fetching enrollments: ' + err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-white rounded-lg shadow p-6">
+        <h1 className="text-3xl font-bold text-gray-900">My Enrolled Courses</h1>
+        <p className="text-gray-600 mt-2">View all courses you are enrolled in</p>
+      </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+          {error}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="bg-white rounded-lg shadow p-8 text-center">
+          <div className="inline-block">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          </div>
+          <p className="text-gray-600 mt-4">Loading enrolled courses...</p>
+        </div>
+      ) : enrollments.length === 0 ? (
+        <div className="bg-white rounded-lg shadow p-8 text-center">
+          <p className="text-gray-600">You haven't enrolled in any courses yet.</p>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {enrollments.map((enrollment) => (
+            <EnrolledCourseCard key={enrollment.eid} enrollment={enrollment} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function EnrolledCourseCard({ enrollment }) {
+  const enrollmentDate = new Date(enrollment.enrollment_date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+
+  return (
+    <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+      <div className="p-6">
+        <div className="flex items-start justify-between mb-2">
+          <h3 className="text-xl font-bold text-gray-900 flex-1">{enrollment.title}</h3>
+          <span className="ml-2 px-2 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded">
+            Enrolled
+          </span>
+        </div>
+        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+          {enrollment.description || 'No description available'}
+        </p>
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-500">Price:</span>
+            <span className="text-lg font-bold text-emerald-600">
+              ${parseFloat(enrollment.price || 0).toFixed(2)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-500">Instructor:</span>
+            <span className="text-sm font-medium text-gray-700">
+              {enrollment.instructor_username || 'Unknown'}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-500">Enrolled:</span>
+            <span className="text-sm text-gray-700">{enrollmentDate}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function EnrollConfirmationModal({ course, student, onClose, onConfirm }) {
+  const [enrolling, setEnrolling] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleConfirm = async () => {
+    if (!student?.id) {
+      setError('Please login to enroll in courses')
+      return
+    }
+
+    setEnrolling(true)
+    setError('')
+
+    try {
+      const response = await fetch('http://localhost:5000/api/student/enroll', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId: student.id,
+          courseId: course.id,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        onConfirm()
+        // Refresh the page or update state
+        window.location.reload()
+      } else {
+        setError(data.message || 'Failed to enroll in course')
+      }
+    } catch (err) {
+      setError('Unable to connect to server')
+    } finally {
+      setEnrolling(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative">
+        <button
+          onClick={onClose}
+          disabled={enrolling}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+          aria-label="Close confirmation"
+        >
+          ×
+        </button>
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">Confirm Purchase</h3>
+        <p className="text-gray-600 mb-6">Please confirm your purchase of this course.</p>
+
+        <div className="bg-gray-50 rounded-lg p-4 mb-6">
+          <h4 className="font-semibold text-gray-900 mb-2">{course.title}</h4>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-600">Price:</span>
+            <span className="text-2xl font-bold text-emerald-600">
+              ${parseFloat(course.price || 0).toFixed(2)}
+            </span>
+          </div>
+          {course.instructor_username && (
+            <div className="flex items-center justify-between mt-2">
+              <span className="text-gray-600">Instructor:</span>
+              <span className="text-gray-900">{course.instructor_username}</span>
+            </div>
+          )}
+        </div>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4">
+            {error}
+          </div>
+        )}
+
+        <div className="flex gap-3">
+          <button
+            onClick={onClose}
+            disabled={enrolling}
+            className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition font-semibold disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleConfirm}
+            disabled={enrolling}
+            className="flex-1 bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition font-semibold disabled:bg-emerald-400 flex items-center justify-center"
+          >
+            {enrolling ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </>
+            ) : (
+              'Confirm Purchase'
+            )}
+          </button>
+        </div>
       </div>
     </div>
   )

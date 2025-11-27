@@ -1,0 +1,55 @@
+{
+  "courseId": 20,
+  "instructorId": 2,
+  "title": "Theory of Computation",
+  "description": "adfk adfkjl",
+  "price": 30,
+  "numberOfLectures": 2,
+  "lectures": [
+    {
+      "lectureNumber": 1,
+      "title": "lec 1",
+      "video": {
+        "originalName": "The 1975 - About You (Official).mp4",
+        "mimeType": "video/mp4",
+        "storagePath": "/uploads/videos/1764102817952-784615854.mp4",
+        "filename": "1764102817952-784615854.mp4",
+        "size": 6618614
+      },
+      "materials": [
+        {
+          "originalName": "Generated Image November 15, 2025 - 5_30AM.png",
+          "mimeType": "image/png",
+          "storagePath": "/uploads/materials/1764102817976-899334832.png",
+          "filename": "1764102817976-899334832.png"
+        },
+        {
+          "originalName": "ios-26-apple-4000x2182-23300.jpg",
+          "mimeType": "image/jpeg",
+          "storagePath": "/uploads/materials/1764102817981-326488434.jpg",
+          "filename": "1764102817981-326488434.jpg"
+        }
+      ]
+    },
+    {
+      "lectureNumber": 2,
+      "title": "lec 2",
+      "video": {
+        "originalName": "snapsave-app_778986108505475_hd.mp4",
+        "mimeType": "video/mp4",
+        "storagePath": "/uploads/videos/1764102817988-138647507.mp4",
+        "filename": "1764102817988-138647507.mp4",
+        "size": 5038148
+      },
+      "materials": [
+        {
+          "originalName": "wallhaven-d6j79o.png",
+          "mimeType": "image/png",
+          "storagePath": "/uploads/materials/1764102817998-46077309.png",
+          "filename": "1764102817998-46077309.png"
+        }
+      ]
+    }
+  ],
+  "createdAt": "2025-11-25T20:33:38.015Z"
+}

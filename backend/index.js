@@ -108,9 +108,9 @@ app.post('/api/login', async (req, res) => {
         id: instructor.tid,
         username: instructor.username,
         isSet: instructor.payment_setup,
-        acc_no : instructor.bank_acc_no,
-        secret_key : instructor.bank_secret_key,
-      },
+        bank_acc_no: instructor.bank_acc_no,
+        bank_secret_key: instructor.bank_secret_key,
+      }
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -267,13 +267,12 @@ app.post('/api/student/payment-setup', async (req, res) => {
     }
   }
 });
-
 // Payment Setup endpoint
 app.post('/api/instructor/payment-setup', async (req, res) => {
   try {
-    const { instructorId, bankAccNo, bankSecretKey } = req.body;
+    const { username, bankAccNo, bankSecretKey } = req.body;
 
-    if (!instructorId || !bankAccNo || !bankSecretKey) {
+    if (!username || !bankAccNo || !bankSecretKey) {
       return res.status(400).json({
         success: false,
         message: 'All fields are required',
@@ -282,17 +281,34 @@ app.post('/api/instructor/payment-setup', async (req, res) => {
 
     const connection = await pool.getConnection();
 
+    // Update the data
     await connection.execute(
-      'UPDATE instructor SET payment_setup = 1, bank_acc_no = ?, bank_secret_key = ? WHERE tid = ?',
-      [bankAccNo, bankSecretKey, instructorId]
+      'UPDATE instructor SET payment_setup = 1, bank_acc_no = ?, bank_secret_key = ? WHERE username = ?',
+      [bankAccNo, bankSecretKey, username]
     );
+
+    // Fetch updated instructor
+    const [rows] = await connection.execute(
+      'SELECT * FROM instructor WHERE username = ?',
+      [username]
+    );
+
+    const instructor = rows[0];
 
     connection.release();
 
+    // IMPORTANT: send the fields exactly how frontend expects
     res.json({
       success: true,
       message: 'Payment setup saved successfully',
+      instructor: {
+        username: instructor.username,
+        payment_setup: instructor.payment_setup,
+        bank_acc_no: instructor.bank_acc_no,
+        bank_secret_key: instructor.bank_secret_key,
+      },
     });
+
   } catch (error) {
     console.error('Payment setup error:', error);
     res.status(500).json({
@@ -301,6 +317,7 @@ app.post('/api/instructor/payment-setup', async (req, res) => {
     });
   }
 });
+
 
 // Upload Course endpoint
 // Upload Course endpoint
@@ -367,18 +384,18 @@ app.post('/api/courses/upload', upload.any(), async (req, res) => {
         `lectures.${index}.title`,
         `lectures[${index}]title`,
       ];
-      
+
       for (const key of possibleKeys) {
         if (req.body[key] !== undefined) {
           return req.body[key];
         }
       }
-      
+
       // Also check if body has nested structure (some parsers do this)
       if (req.body.lectures && Array.isArray(req.body.lectures) && req.body.lectures[index]) {
         return req.body.lectures[index].title;
       }
-      
+
       return null;
     };
 
@@ -419,7 +436,7 @@ app.post('/api/courses/upload', upload.any(), async (req, res) => {
       if (!lectureTitle) {
         throw new Error(`Lecture ${i + 1} is missing a title. Received keys: ${Object.keys(req.body).filter(k => k.includes(String(i))).join(', ')}`);
       }
-      
+
       if (!videoFile) {
         throw new Error(`Lecture ${i + 1} is missing a video. Available files for this lecture: ${lectureFiles[i] ? 'found entry but no video' : 'no entry found'}`);
       }
@@ -540,6 +557,210 @@ app.get('/api/courses/instructor/:instructorId', async (req, res) => {
     });
   } catch (error) {
     console.error('Get courses error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+    });
+  }
+});
+
+// Get all courses endpoint (for students)
+app.get('/api/courses', async (req, res) => {
+  let connection;
+  try {
+    connection = await pool.getConnection();
+
+    // Get all courses with instructor information
+    const [courses] = await connection.execute(
+      `SELECT c.cid AS id, c.course_name AS title, c.description, c.price, c.instructor_id,
+       i.username AS instructor_username
+       FROM course c
+       LEFT JOIN instructor i ON c.instructor_id = i.tid
+       ORDER BY c.cid DESC`
+    );
+
+    connection.release();
+
+    res.json({
+      success: true,
+      courses: courses,
+    });
+  } catch (error) {
+    console.error('Get courses error:', error);
+    if (connection) {
+      connection.release();
+    }
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+    });
+  }
+});
+
+// Enroll student in course endpoint
+app.post('/api/student/enroll', async (req, res) => {
+  let connection;
+  try {
+    const { studentId, courseId } = req.body;
+
+    if (!studentId || !courseId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Student ID and Course ID are required',
+      });
+    }
+
+    connection = await pool.getConnection();
+
+    // Check if student is already enrolled
+    const [existing] = await connection.execute(
+      'SELECT eid FROM enrollment WHERE student_id = ? AND course_id = ?',
+      [studentId, courseId]
+    );
+
+    if (existing.length > 0) {
+      connection.release();
+      return res.status(409).json({
+        success: false,
+        message: 'You are already enrolled in this course',
+      });
+    }
+
+    // Get course details (price)
+    const [courseRows] = await connection.execute(
+      'SELECT price FROM course WHERE cid = ?',
+      [courseId]
+    );
+
+    if (courseRows.length === 0) {
+      connection.release();
+      return res.status(404).json({
+        success: false,
+        message: 'Course not found',
+      });
+    }
+
+    const coursePrice = parseFloat(courseRows[0].price || 0);
+
+    // Get student's payment information
+    const [studentRows] = await connection.execute(
+      'SELECT bank_acc_no, bank_secret_key, payment_setup FROM student WHERE uid = ?',
+      [studentId]
+    );
+
+    if (studentRows.length === 0) {
+      connection.release();
+      return res.status(404).json({
+        success: false,
+        message: 'Student not found',
+      });
+    }
+
+    const student = studentRows[0];
+
+    if (!student.payment_setup || !student.bank_acc_no || !student.bank_secret_key) {
+      connection.release();
+      return res.status(400).json({
+        success: false,
+        message: 'Payment setup is required. Please set up your payment information first.',
+      });
+    }
+
+    // Process payment through bank API
+    if (coursePrice > 0) {
+      try {
+        const bankResponse = await fetch('http://localhost:3000/bank-api/transfer', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            from_account_no: student.bank_acc_no,
+            secret_key: student.bank_secret_key,
+            amount: coursePrice,
+          }),
+        });
+
+        const bankData = await bankResponse.json();
+
+        if (!bankData.success) {
+          connection.release();
+          return res.status(400).json({
+            success: false,
+            message: bankData.error || 'Payment processing failed',
+          });
+        }
+      } catch (bankError) {
+        console.error('Bank API error:', bankError);
+        connection.release();
+        return res.status(500).json({
+          success: false,
+          message: 'Unable to process payment. Please try again later.',
+        });
+      }
+    }
+
+    // Insert enrollment
+    const [result] = await connection.execute(
+      'INSERT INTO enrollment (student_id, course_id, enrollment_date) VALUES (?, ?, NOW())',
+      [studentId, courseId]
+    );
+
+    connection.release();
+
+    res.json({
+      success: true,
+      message: 'Enrolled successfully',
+      enrollmentId: result.insertId,
+    });
+  } catch (error) {
+    console.error('Enrollment error:', error);
+    if (connection) {
+      connection.release();
+    }
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+    });
+  }
+});
+
+// Get student's enrolled courses
+app.get('/api/student/:studentId/enrollments', async (req, res) => {
+  let connection;
+  try {
+    const { studentId } = req.params;
+
+    if (!studentId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Student ID is required',
+      });
+    }
+
+    connection = await pool.getConnection();
+
+    const [enrollments] = await connection.execute(
+      `SELECT e.eid, e.enrollment_date, e.course_id,
+       c.course_name AS title, c.description, c.price, c.instructor_id,
+       i.username AS instructor_username
+       FROM enrollment e
+       JOIN course c ON e.course_id = c.cid
+       LEFT JOIN instructor i ON c.instructor_id = i.tid
+       WHERE e.student_id = ?
+       ORDER BY e.enrollment_date DESC`,
+      [studentId]
+    );
+
+    connection.release();
+
+    res.json({
+      success: true,
+      enrollments: enrollments,
+    });
+  } catch (error) {
+    console.error('Get enrollments error:', error);
+    if (connection) {
+      connection.release();
+    }
     res.status(500).json({
       success: false,
       message: 'Server error',
