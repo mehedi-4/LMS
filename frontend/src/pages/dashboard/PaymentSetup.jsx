@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 
 export default function PaymentSetup() {
-  const { user } = useAuth()
+  const { user, updateUser } = useAuth()
 
   const [bankAccNo, setBankAccNo] = useState('')
   const [bankSecretKey, setBankSecretKey] = useState('')
@@ -48,14 +48,12 @@ export default function PaymentSetup() {
         setBankAccNo('')
         setBankSecretKey('')
 
-        // update localStorage user so UI reflects correctly across app
-        const updatedUser = {
-          ...user,
+        // Update user state instantly so UI reflects correctly
+        updateUser({
           isSet: data.instructor.payment_setup,
           bank_acc_no: data.instructor.bank_acc_no,
           bank_secret_key: data.instructor.bank_secret_key,
-        }
-        localStorage.setItem('instructorAuth', JSON.stringify(updatedUser))
+        })
       } else {
         setMessageType('error')
         setMessage(data.message || 'Failed to save payment setup')

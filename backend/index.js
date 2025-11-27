@@ -626,9 +626,9 @@ app.post('/api/student/enroll', async (req, res) => {
       });
     }
 
-    // Get course details (price)
+    // Get course details (price and instructor_id)
     const [courseRows] = await connection.execute(
-      'SELECT price FROM course WHERE cid = ?',
+      'SELECT price, instructor_id FROM course WHERE cid = ?',
       [courseId]
     );
 
@@ -641,6 +641,7 @@ app.post('/api/student/enroll', async (req, res) => {
     }
 
     const coursePrice = parseFloat(courseRows[0].price || 0);
+    const instructorId = courseRows[0].instructor_id;
 
     // Get student's payment information
     const [studentRows] = await connection.execute(
@@ -687,6 +688,40 @@ app.post('/api/student/enroll', async (req, res) => {
             success: false,
             message: bankData.error || 'Payment processing failed',
           });
+        }
+
+        // After successful student payment, send 50% to instructor
+        const instructorShare = coursePrice * 0.5;
+        
+        if (instructorShare > 0) {
+          // Get instructor's payment information
+          const [instructorRows] = await connection.execute(
+            'SELECT bank_acc_no, payment_setup FROM instructor WHERE tid = ?',
+            [instructorId]
+          );
+
+          if (instructorRows.length > 0 && instructorRows[0].payment_setup && instructorRows[0].bank_acc_no) {
+            try {
+              const instructorTransferResponse = await fetch('http://localhost:3000/bank-api/transfer-lms-to-instructor', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  to_account_no: instructorRows[0].bank_acc_no,
+                  amount: instructorShare,
+                }),
+              });
+
+              const instructorTransferData = await instructorTransferResponse.json();
+
+              if (!instructorTransferData.success) {
+                console.error('Failed to transfer to instructor:', instructorTransferData.error);
+                // Don't fail the enrollment if instructor transfer fails, just log it
+              }
+            } catch (instructorTransferError) {
+              console.error('Bank API error for instructor transfer:', instructorTransferError);
+              // Don't fail the enrollment if instructor transfer fails, just log it
+            }
+          }
         }
       } catch (bankError) {
         console.error('Bank API error:', bankError);
