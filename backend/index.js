@@ -785,6 +785,25 @@ app.get('/api/student/:studentId/enrollments', async (req, res) => {
       [studentId]
     );
 
+    // For each enrollment, get its lectures and materials
+    for (let enrollment of enrollments) {
+      const [lectures] = await connection.execute(
+        'SELECT * FROM course_lecture WHERE course_id = ? ORDER BY lecture_number ASC',
+        [enrollment.course_id]
+      );
+
+      // For each lecture, get its materials
+      for (let lecture of lectures) {
+        const [materials] = await connection.execute(
+          'SELECT * FROM course_material WHERE lecture_id = ? ORDER BY created_at ASC',
+          [lecture.id]
+        );
+        lecture.materials = materials;
+      }
+
+      enrollment.lectures = lectures;
+    }
+
     connection.release();
 
     res.json({

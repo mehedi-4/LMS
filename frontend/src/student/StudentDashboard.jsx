@@ -421,7 +421,7 @@ function EnrolledCoursesSection({ student }) {
           <p className="text-gray-600">You haven't enrolled in any courses yet.</p>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="space-y-4">
           {enrollments.map((enrollment) => (
             <EnrolledCourseCard key={enrollment.eid} enrollment={enrollment} />
           ))}
@@ -432,43 +432,183 @@ function EnrolledCoursesSection({ student }) {
 }
 
 function EnrolledCourseCard({ enrollment }) {
+  const [expandedCourse, setExpandedCourse] = useState(null)
+  const [expandedLecture, setExpandedLecture] = useState(null)
+
   const enrollmentDate = new Date(enrollment.enrollment_date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   })
 
+  const toggleCourseExpand = () => {
+    setExpandedCourse(expandedCourse === enrollment.course_id ? null : enrollment.course_id)
+    setExpandedLecture(null)
+  }
+
+  const toggleLectureExpand = (lectureId) => {
+    setExpandedLecture(expandedLecture === lectureId ? null : lectureId)
+  }
+
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-      <div className="p-6">
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="text-xl font-bold text-gray-900 flex-1">{enrollment.title}</h3>
-          <span className="ml-2 px-2 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded">
-            Enrolled
-          </span>
-        </div>
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-          {enrollment.description || 'No description available'}
-        </p>
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Price:</span>
-            <span className="text-lg font-bold text-emerald-600">
+    <div className="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-lg">
+      {/* Course Header */}
+      <button
+        onClick={toggleCourseExpand}
+        className="w-full bg-gradient-to-r from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100 p-6 transition flex justify-between items-start"
+      >
+        <div className="text-left flex-1">
+          <div className="flex items-start justify-between mb-2">
+            <h3 className="text-xl font-bold text-gray-900 flex-1">{enrollment.title}</h3>
+            <span className="ml-2 px-2 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded">
+              Enrolled
+            </span>
+          </div>
+          <p className="text-gray-600 text-sm mt-1 line-clamp-2">{enrollment.description || 'No description available'}</p>
+          <div className="flex gap-4 mt-3 text-sm">
+            <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full">
               ${parseFloat(enrollment.price || 0).toFixed(2)}
             </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Instructor:</span>
-            <span className="text-sm font-medium text-gray-700">
-              {enrollment.instructor_username || 'Unknown'}
+            <span className="text-gray-500">
+              Instructor: {enrollment.instructor_username || 'Unknown'}
+            </span>
+            <span className="text-gray-500">
+              Enrolled: {enrollmentDate}
             </span>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Enrolled:</span>
-            <span className="text-sm text-gray-700">{enrollmentDate}</span>
+        </div>
+        <svg
+          className={`w-6 h-6 text-gray-400 transition transform ml-4 ${
+            expandedCourse === enrollment.course_id ? 'rotate-180' : ''
+          }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+      </button>
+
+      {/* Course Details */}
+      {expandedCourse === enrollment.course_id && (
+        <div className="border-t border-gray-200 bg-white">
+          {/* Course Info */}
+          <div className="p-6 border-b border-gray-100">
+            <h4 className="font-semibold text-gray-900 mb-2">Course Description</h4>
+            <p className="text-gray-700 whitespace-pre-wrap">{enrollment.description || 'No description available'}</p>
+          </div>
+
+          {/* Lectures */}
+          <div className="p-6">
+            <h4 className="font-semibold text-gray-900 mb-4">
+              Lectures ({enrollment.lectures?.length || 0})
+            </h4>
+
+            {enrollment.lectures && enrollment.lectures.length > 0 ? (
+              <div className="space-y-3">
+                {enrollment.lectures.map((lecture) => (
+                  <div key={lecture.id} className="border border-gray-200 rounded-lg overflow-hidden">
+                    {/* Lecture Header */}
+                    <button
+                      onClick={() => toggleLectureExpand(lecture.id)}
+                      className="w-full bg-gray-50 hover:bg-gray-100 p-4 transition flex justify-between items-center"
+                    >
+                      <div className="text-left">
+                        <p className="font-semibold text-gray-900">
+                          Lecture {lecture.lecture_number}: {lecture.title}
+                        </p>
+                        {lecture.video_path && (
+                          <p className="text-sm text-gray-500 mt-1">📹 Video included</p>
+                        )}
+                      </div>
+                      <svg
+                        className={`w-5 h-5 text-gray-400 transition transform ${
+                          expandedLecture === lecture.id ? 'rotate-180' : ''
+                        }`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                        />
+                      </svg>
+                    </button>
+
+                    {/* Lecture Details */}
+                    {expandedLecture === lecture.id && (
+                      <div className="bg-white border-t border-gray-200 p-4 space-y-4">
+                        {/* Video Player */}
+                        {lecture.video_path && (
+                          <div>
+                            <p className="font-semibold text-gray-900 mb-2">Video</p>
+                            <video
+                              controls
+                              className="w-full rounded-lg bg-black max-h-96"
+                              src={`http://localhost:5000${lecture.video_path}`}
+                            >
+                              Your browser does not support the video tag.
+                            </video>
+                          </div>
+                        )}
+
+                        {/* Materials */}
+                        {lecture.materials && lecture.materials.length > 0 && (
+                          <div>
+                            <p className="font-semibold text-gray-900 mb-2">
+                              Course Materials ({lecture.materials.length})
+                            </p>
+                            <div className="space-y-2">
+                              {lecture.materials.map((material) => (
+                                <a
+                                  key={material.id}
+                                  href={`http://localhost:5000${material.file_path}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition group"
+                                >
+                                  <div className="flex-1">
+                                    <p className="font-medium text-gray-900 group-hover:text-emerald-600">
+                                      {material.file_name}
+                                    </p>
+                                    <p className="text-sm text-gray-500">{material.material_type}</p>
+                                  </div>
+                                  <svg
+                                    className="w-5 h-5 text-gray-400 group-hover:text-emerald-600"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                    />
+                                  </svg>
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {!lecture.video_path && (!lecture.materials || lecture.materials.length === 0) && (
+                          <p className="text-gray-500 italic">No content available for this lecture</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 italic">No lectures added to this course</p>
+            )}
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
