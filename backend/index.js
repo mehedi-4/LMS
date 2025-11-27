@@ -803,6 +803,132 @@ app.get('/api/student/:studentId/enrollments', async (req, res) => {
   }
 });
 
+// Get student balance and transactions
+app.get('/api/student/:studentId/transactions', async (req, res) => {
+  let connection;
+  try {
+    const { studentId } = req.params;
+
+    if (!studentId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Student ID is required',
+      });
+    }
+
+    connection = await pool.getConnection();
+
+    // Get student's bank account number
+    const [studentRows] = await connection.execute(
+      'SELECT bank_acc_no FROM student WHERE uid = ?',
+      [studentId]
+    );
+
+    if (studentRows.length === 0 || !studentRows[0].bank_acc_no) {
+      connection.release();
+      return res.status(404).json({
+        success: false,
+        message: 'Student not found or payment not set up',
+      });
+    }
+
+    const accountNo = studentRows[0].bank_acc_no;
+
+    // Get balance from bank API
+    const balanceResponse = await fetch('http://localhost:3000/bank-api/balance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ account_no: accountNo }),
+    });
+
+    const balanceData = await balanceResponse.json();
+
+    // Get transactions from bank API
+    const transactionsResponse = await fetch(`http://localhost:3000/bank-api/transactions/${accountNo}`);
+    const transactionsData = await transactionsResponse.json();
+
+    connection.release();
+
+    res.json({
+      success: true,
+      balance: balanceData.balance || 0,
+      transactions: transactionsData.success ? transactionsData.transactions : [],
+    });
+  } catch (error) {
+    console.error('Get student transactions error:', error);
+    if (connection) {
+      connection.release();
+    }
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+    });
+  }
+});
+
+// Get instructor balance and transactions
+app.get('/api/instructor/:instructorId/transactions', async (req, res) => {
+  let connection;
+  try {
+    const { instructorId } = req.params;
+
+    if (!instructorId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Instructor ID is required',
+      });
+    }
+
+    connection = await pool.getConnection();
+
+    // Get instructor's bank account number
+    const [instructorRows] = await connection.execute(
+      'SELECT bank_acc_no FROM instructor WHERE tid = ?',
+      [instructorId]
+    );
+
+    if (instructorRows.length === 0 || !instructorRows[0].bank_acc_no) {
+      connection.release();
+      return res.status(404).json({
+        success: false,
+        message: 'Instructor not found or payment not set up',
+      });
+    }
+
+    const accountNo = instructorRows[0].bank_acc_no;
+
+    // Get balance from bank API
+    const balanceResponse = await fetch('http://localhost:3000/bank-api/balance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ account_no: accountNo }),
+    });
+
+    const balanceData = await balanceResponse.json();
+
+    // Get transactions from bank API
+    const transactionsResponse = await fetch(`http://localhost:3000/bank-api/transactions/${accountNo}`);
+    const transactionsData = await transactionsResponse.json();
+
+    connection.release();
+
+    res.json({
+      success: true,
+      balance: balanceData.balance || 0,
+      transactions: transactionsData.success ? transactionsData.transactions : [],
+    });
+  } catch (error) {
+    console.error('Get instructor transactions error:', error);
+    if (connection) {
+      connection.release();
+    }
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+    });
+  }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'Backend is running' });

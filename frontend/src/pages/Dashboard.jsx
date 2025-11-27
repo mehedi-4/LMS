@@ -4,6 +4,7 @@ import View from './dashboard/View'
 import Profile from './dashboard/Profile'
 import PaymentSetup from './dashboard/PaymentSetup'
 import UploadCourse from './dashboard/UploadCourse'
+import Transactions from './dashboard/Transactions'
 
 export default function Dashboard() {
     const { user, logout } = useAuth()
@@ -19,6 +20,8 @@ export default function Dashboard() {
                 return <Profile user={user} />
             case 'payment':
                 return <PaymentSetup user={user} />
+            case 'transactions':
+                return <Transactions user={user} />
             case 'upload-course':
                 return <UploadCourse user={user} />
             case 'view-course':
@@ -65,6 +68,21 @@ export default function Dashboard() {
                                 <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
                             </svg>
                             Payment Setup
+                        </span>
+                    </button>
+
+                    <button
+                        onClick={() => setActiveMenu('transactions')}
+                        className={`w-full text-left px-6 py-3 transition ${activeMenu === 'transactions'
+                                ? 'bg-indigo-600 border-l-4 border-white'
+                                : 'hover:bg-indigo-600'
+                            }`}
+                    >
+                        <span className="flex items-center">
+                            <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            Transactions
                         </span>
                     </button>
 

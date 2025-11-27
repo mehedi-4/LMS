@@ -14,6 +14,33 @@ const bankDb = mysql.createPool({
   database: "bank",   // database where `users` table exists
 });
 
+// Initialize transactions table if it doesn't exist
+async function initializeTransactionsTable() {
+  try {
+    const connection = await bankDb.getConnection();
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS transactions (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+        from_account_no VARCHAR(50),
+        to_account_no VARCHAR(50) NOT NULL,
+        amount DECIMAL(10, 2) NOT NULL,
+        transaction_type ENUM('debit', 'credit') NOT NULL,
+        description VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_from_account (from_account_no),
+        INDEX idx_to_account (to_account_no),
+        INDEX idx_created_at (created_at)
+      )
+    `);
+    connection.release();
+  } catch (error) {
+    console.error("Error initializing transactions table:", error);
+  }
+}
+
+// Initialize on startup
+initializeTransactionsTable();
+
 // ===============================
 //   POST /bank-api/balance
 //   Get balance using account_no
@@ -130,6 +157,12 @@ app.post("/bank-api/transfer", async (req, res) => {
       [parsedAmount, LMS_ACCOUNT]
     );
 
+    // Record transaction (one record for the transfer)
+    await connection.execute(
+      "INSERT INTO transactions (from_account_no, to_account_no, amount, transaction_type, description) VALUES (?, ?, ?, 'debit', ?)",
+      [from_account_no, LMS_ACCOUNT, parsedAmount, `Course payment to LMS`]
+    );
+
     await connection.commit();
 
     return res.json({
@@ -236,6 +269,12 @@ app.post("/bank-api/transfer-lms-to-instructor", async (req, res) => {
       [parsedAmount, to_account_no]
     );
 
+    // Record transaction (one record for the transfer)
+    await connection.execute(
+      "INSERT INTO transactions (from_account_no, to_account_no, amount, transaction_type, description) VALUES (?, ?, ?, 'credit', ?)",
+      [LMS_ACCOUNT, to_account_no, parsedAmount, `Course revenue share (50%)`]
+    );
+
     await connection.commit();
 
     return res.json({
@@ -257,6 +296,56 @@ app.post("/bank-api/transfer-lms-to-instructor", async (req, res) => {
     });
   } finally {
     connection.release();
+  }
+});
+
+// ===============================
+//   GET /bank-api/transactions/:account_no
+//   Get all transactions for an account
+// ===============================
+app.get("/bank-api/transactions/:account_no", async (req, res) => {
+  try {
+    const { account_no } = req.params;
+
+    if (!account_no) {
+      return res.status(400).json({ 
+        success: false,
+        error: "account_no is required" 
+      });
+    }
+
+    // Get all transactions where account is involved (as sender or receiver)
+    const [transactions] = await bankDb.execute(
+      `SELECT 
+        id,
+        from_account_no,
+        to_account_no,
+        amount,
+        transaction_type,
+        description,
+        created_at,
+        CASE 
+          WHEN from_account_no = ? THEN 'outgoing'
+          WHEN to_account_no = ? THEN 'incoming'
+        END AS direction
+      FROM transactions
+      WHERE from_account_no = ? OR to_account_no = ?
+      ORDER BY created_at DESC
+      LIMIT 100`,
+      [account_no, account_no, account_no, account_no]
+    );
+
+    return res.json({
+      success: true,
+      transactions: transactions,
+    });
+
+  } catch (error) {
+    console.error("Get transactions error:", error);
+    return res.status(500).json({ 
+      success: false,
+      error: "Server error" 
+    });
   }
 });
 
